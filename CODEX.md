@@ -20,7 +20,7 @@ Hanz has not confirmed which framing leads. Treat all copy as swappable until he
 ## Repo and Deploy State (current, not aspirational)
 
 - `C:\Users\Admin\Documents\Vivir` **is** a git repository. Remote:
-  `https://github.com/vivirproductions/Vivir`. Do not run `git init` - it already exists.
+  `https://github.com/vivirstudios/vivir-landing-page`. Do not run `git init` - it already exists.
 - A Next.js 16 App Router app is scaffolded: `app/`, `src/`, `public/`, TypeScript, deployed to
   Vercel as `vivirproduction-1227`. `package.json` name is `vivir-three-version-review`.
 - The Next.js app currently serves a **review selector** - `/`, `/v1-ochre`, `/v2-sanctuary`,
@@ -82,7 +82,7 @@ a comment, never as a hex, or the audit fails for a reason that looks like nonse
 ## Inquiry Form / Email
 
 `app/api/inquiry/route.ts` is a Next.js route handler (Node runtime, forced - nodemailer
-cannot run on Edge) that emails a real inquiry to `vivir.production@gmail.com` over Gmail SMTP.
+cannot run on Edge) that emails a real inquiry to `vivir.studios.iloilo@gmail.com` over Gmail SMTP.
 Credentials are `GMAIL_USER` / `GMAIL_APP_PASSWORD`, read from environment only - `.env.local`
 locally (gitignored), the Vercel project's Environment Variables in production. Never write a
 real credential into any file in this repo; `.env.example` holds placeholders only. The route

@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** The single place the destination address is written. Change it here only. */
-export const INQUIRY_TO = "vivir.production@gmail.com";
+export const INQUIRY_TO = "vivir.studios.iloilo@gmail.com";
 
 const SMTP_HOST = "smtp.gmail.com";
 const SMTP_PORT = 465;
@@ -28,6 +28,8 @@ const FROM_NAME = "Vivír Website";
 const MAX = {
   name: 120,
   email: 254,
+  packageInterest: 120,
+  addOn: 80,
   subject: 160,
   message: 4000,
 } as const;
@@ -42,6 +44,8 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[A-Za-z]{2,}$/;
 type Fields = {
   name: string;
   email: string;
+  packageInterest: string;
+  addOns: string[];
   subject: string;
   message: string;
   /** Honeypot. A real person never sees this input, so it must arrive empty. */
@@ -60,10 +64,21 @@ function readString(source: Record<string, unknown>, key: string): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function readStringList(source: Record<string, unknown>, key: string): string[] {
+  const value = source[key];
+  const values = Array.isArray(value) ? value : typeof value === "string" ? [value] : [];
+  return values
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function collect(source: Record<string, unknown>): Fields {
   return {
     name: readString(source, "name"),
     email: readString(source, "email"),
+    packageInterest: readString(source, "packageInterest"),
+    addOns: readStringList(source, "addOns"),
     subject: readString(source, "subject"),
     message: readString(source, "message"),
     website: readString(source, "website"),
@@ -96,7 +111,11 @@ async function readFields(request: Request): Promise<Fields | null> {
       const form = await request.formData();
       const flat: Record<string, unknown> = {};
       for (const [key, value] of form.entries()) {
-        if (typeof value === "string" && !(key in flat)) {
+        if (typeof value !== "string") continue;
+        if (key === "addOns") {
+          const current = flat.addOns;
+          flat.addOns = Array.isArray(current) ? [...current, value] : [value];
+        } else if (!(key in flat)) {
           flat[key] = value;
         }
       }
@@ -142,6 +161,26 @@ function validate(fields: Fields): FieldError[] {
     });
   }
 
+  if (!fields.packageInterest) {
+    errors.push({
+      field: "packageInterest",
+      message: "Please choose a package, or select Not sure yet.",
+    });
+  } else if (fields.packageInterest.length > MAX.packageInterest) {
+    errors.push({
+      field: "packageInterest",
+      message: `Your package selection is too long. Please keep it to ${MAX.packageInterest} characters or fewer.`,
+    });
+  }
+
+  const longAddOn = fields.addOns.find((item) => item.length > MAX.addOn);
+  if (longAddOn) {
+    errors.push({
+      field: "addOns",
+      message: `One add-on is too long. Please keep each add-on to ${MAX.addOn} characters or fewer.`,
+    });
+  }
+
   if (!fields.message) {
     errors.push({ field: "message", message: "Please tell us a little about your inquiry." });
   } else if (fields.message.length > MAX.message) {
@@ -155,11 +194,14 @@ function validate(fields: Fields): FieldError[] {
 }
 
 function buildBody(fields: Fields, subject: string): string {
+  const addOns = fields.addOns.map(oneLine);
   return [
     "New inquiry from the Vivír website.",
     "",
     `Name:    ${fields.name}`,
     `Email:   ${fields.email}`,
+    `Package: ${oneLine(fields.packageInterest)}`,
+    `Add-ons: ${addOns.length ? addOns.join(", ") : "None selected"}`,
     `Subject: ${subject}`,
     "",
     "Message:",

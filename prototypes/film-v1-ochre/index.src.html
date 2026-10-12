@@ -37,7 +37,7 @@
   No person, couple, client, church or ministry is named anywhere, visible or in source.
   No year is attached to any row. No fact is asserted about Vivír: no founding year, no
   founders, no head count, no film count, no awards, no address. The one address is
-  vivir.production@gmail.com, the studio's real inbox, supplied by the studio principal - the one
+  vivir.studios.iloilo@gmail.com, the studio's real inbox, supplied by the studio principal - the one
   real fact this page asserts. Unfilled values are rendered as
   visible bracketed placeholders in the page, not hidden in a comment. Row names and
   kinds come from the fixed brief list and nowhere else. Every img alt describes the
@@ -560,15 +560,21 @@ footer{background:var(--surface);border-top:1px solid var(--rule);
   transition:border-color .3s cubic-bezier(.16,1,.3,1),color .3s cubic-bezier(.16,1,.3,1)}
 .mail:hover,.mail:focus-visible{border-bottom-color:var(--accent);color:var(--accent)}
 .inquiry{display:grid;gap:18px;width:100%;max-width:34rem;justify-self:end}
-.field{display:grid;gap:7px}
-.field label{font-weight:300;font-size:10px;line-height:1.2;letter-spacing:.18em;text-transform:uppercase;color:var(--grey)}
-.field input,.field textarea{width:100%;border:1px solid var(--rule);border-color:color-mix(in srgb,var(--accent) 42%,transparent);
+.field{display:grid;gap:7px;margin:0;padding:0;border:0;min-inline-size:0}
+.field label,.field legend{font-weight:300;font-size:10px;line-height:1.2;letter-spacing:.18em;text-transform:uppercase;color:var(--grey)}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--rule);border-color:color-mix(in srgb,var(--accent) 42%,transparent);
   border-radius:0;background:var(--ink);color:var(--bone);font:300 15px/1.45 var(--sans);padding:13px 14px;outline:0;
   transition:border-color .3s cubic-bezier(.16,1,.3,1),background-color .3s cubic-bezier(.16,1,.3,1)}
+.field select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--accent) 50%),linear-gradient(135deg,var(--accent) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:38px}
 .field textarea{min-height:168px;resize:vertical}
-.field input:hover,.field textarea:hover{border-color:var(--grey)}
-.field input:focus-visible,.field textarea:focus-visible{border-color:var(--accent);background:var(--plate)}
-.field input[aria-invalid="true"],.field textarea[aria-invalid="true"]{border-color:var(--accent)}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:var(--grey)}
+.field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible{border-color:var(--accent);background:var(--plate)}
+.field input[aria-invalid="true"],.field select[aria-invalid="true"],.field textarea[aria-invalid="true"]{border-color:var(--accent)}
+.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin-top:2px}
+.choice{display:flex;align-items:center;gap:9px;color:var(--bone);font-weight:300;font-size:12px;line-height:1.35;letter-spacing:.04em}
+.choice input{width:13px;height:13px;flex:0 0 auto;accent-color:var(--accent);padding:0}
+.field__hint{margin:0;color:var(--grey);font-size:11px;line-height:1.45}
 .field__error{min-height:1.2em;margin:0;color:var(--accent);font-size:11px;line-height:1.4}
 .trap{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
   overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
@@ -1073,7 +1079,7 @@ footer{background:var(--surface);border-top:1px solid var(--rule);
     <div class="foot__intro">
       <h2 class="foot__title">You have a testimony? Let’s talk.</h2>
       <p class="foot__copy">Tell us about the project, what you need, and where you are in the process.</p>
-      <a class="mail" href="mailto:vivir.production@gmail.com">vivir.production@gmail.com</a>
+      <a class="mail" href="mailto:vivir.studios.iloilo@gmail.com">vivir.studios.iloilo@gmail.com</a>
     </div>
 
     <form class="inquiry" id="inquiry" action="/api/inquiry" method="post">
@@ -1087,6 +1093,42 @@ footer{background:var(--surface);border-top:1px solid var(--rule);
         <input id="inquiry-email" name="email" type="email" autocomplete="email" maxlength="254" required aria-describedby="inquiry-email-error">
         <p class="field__error" id="inquiry-email-error"></p>
       </div>
+      <div class="field">
+        <label for="inquiry-package">Package interest *</label>
+        <select id="inquiry-package" name="packageInterest" required aria-describedby="inquiry-packageInterest-error">
+          <option value="">Select a package</option>
+          <option>Not sure yet - help me choose</option>
+          <option>Wedding Photo and Video - Basic</option>
+          <option>Wedding Photo and Video - Standard</option>
+          <option>Wedding Photo and Video - Premium</option>
+          <option>Wedding Photo and Video - Deluxe</option>
+          <option>Debut Photo and Video - Basic</option>
+          <option>Debut Photo and Video - Standard</option>
+          <option>Debut Photo and Video - Premium</option>
+          <option>Debut Photo and Video - Deluxe</option>
+          <option>Video Coverage Only - Basic</option>
+          <option>Video Coverage Only - Standard</option>
+          <option>Video Coverage Only - Premium</option>
+          <option>Photo Coverage Only - Basic</option>
+          <option>Photo Coverage Only - Standard</option>
+          <option>Photo Coverage Only - Premium</option>
+        </select>
+        <p class="field__error" id="inquiry-packageInterest-error"></p>
+      </div>
+      <fieldset class="field">
+        <legend>Add-ons <span class="sr-only">optional</span></legend>
+        <p class="field__hint">Choose anything you may need. We can finalize this after the first reply.</p>
+        <div class="choice-grid">
+          <label class="choice"><input type="checkbox" name="addOns" value="Same-day edit">Same-day edit</label>
+          <label class="choice"><input type="checkbox" name="addOns" value="Aerial / drone coverage">Aerial / drone coverage</label>
+          <label class="choice"><input type="checkbox" name="addOns" value="Pre-event or pre-debut session">Pre-event or pre-debut session</label>
+          <label class="choice"><input type="checkbox" name="addOns" value="Photo slideshow">Photo slideshow</label>
+          <label class="choice"><input type="checkbox" name="addOns" value="Album">Album</label>
+          <label class="choice"><input type="checkbox" name="addOns" value="Clean cut documentary">Clean cut documentary</label>
+          <label class="choice"><input type="checkbox" name="addOns" value="Extra coverage hours">Extra coverage hours</label>
+          <label class="choice"><input type="checkbox" name="addOns" value="Rush delivery">Rush delivery</label>
+        </div>
+      </fieldset>
       <div class="field">
         <label for="inquiry-subject">Subject <span class="sr-only">optional</span></label>
         <input id="inquiry-subject" name="subject" type="text" autocomplete="off" maxlength="160" aria-describedby="inquiry-subject-error">
@@ -1502,7 +1544,7 @@ function applyFilmFilter(cat){
 
   var button = form.querySelector('[type="submit"]');
   var sending = false;
-  var fields = ['name', 'email', 'subject', 'message'];
+  var fields = ['name', 'email', 'packageInterest', 'subject', 'message'];
   form.noValidate = true;
 
   function inputFor(name){ return form.elements.namedItem(name); }
@@ -1528,8 +1570,8 @@ function applyFilmFilter(cat){
     if (withEmail) {
       text.appendChild(document.createTextNode(' '));
       var link = document.createElement('a');
-      link.href = 'mailto:vivir.production@gmail.com';
-      link.textContent = 'vivir.production@gmail.com';
+      link.href = 'mailto:vivir.studios.iloilo@gmail.com';
+      link.textContent = 'vivir.studios.iloilo@gmail.com';
       status.appendChild(link);
     }
   }
@@ -1541,7 +1583,8 @@ function applyFilmFilter(cat){
       if (!input || input.validity.valid) return;
       var message = input.validity.valueMissing
         ? (name === 'name' ? 'Please tell us your name.' : name === 'email'
-          ? 'Please give us an email address to reply to.' : 'Please tell us a little about your inquiry.')
+          ? 'Please give us an email address to reply to.' : name === 'packageInterest'
+          ? 'Please choose a package, or select Not sure yet.' : 'Please tell us a little about your inquiry.')
         : name === 'email' ? 'That email address does not look right.' : 'Please check this field.';
       setError(name, message);
       if (!first) first = input;

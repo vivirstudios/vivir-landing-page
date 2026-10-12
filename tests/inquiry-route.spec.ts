@@ -46,12 +46,14 @@ let savedEnv: Record<string, string | undefined> = {};
 
 const ENV_KEYS = ["GMAIL_USER", "GMAIL_APP_PASSWORD"] as const;
 
-const FAKE_USER = "vivir.production@gmail.com";
+const FAKE_USER = "vivir.studios.iloilo@gmail.com";
 const FAKE_APP_PASSWORD = "notarealapppassw";
 
 const VALID = {
   name: "Test Sender",
   email: "sender@example.com",
+  packageInterest: "Wedding Photo and Video - Standard",
+  addOns: ["Same-day edit", "Aerial / drone coverage"],
   subject: "Test subject",
   message: "Test message body for the inquiry form.",
 } as const;
@@ -112,13 +114,21 @@ function jsonRequest(body: unknown, headers: Record<string, string> = {}): Reque
 }
 
 function formRequest(
-  pairs: Record<string, string>,
+  pairs: Record<string, string | readonly string[]>,
   headers: Record<string, string> = {},
 ): Request {
+  const body = new URLSearchParams();
+  for (const [key, value] of Object.entries(pairs)) {
+    if (typeof value === "string") {
+      body.append(key, value);
+    } else {
+      for (const item of value) body.append(key, item);
+    }
+  }
   return new Request("http://localhost/api/inquiry", {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded", ...headers },
-    body: new URLSearchParams(pairs).toString(),
+    body: body.toString(),
   });
 }
 
@@ -131,16 +141,16 @@ async function payload(response: Response): Promise<Record<string, unknown>> {
 // --------------------------------------------------------------------------
 
 test("the destination address lives in one exported constant", () => {
-  expect(INQUIRY_TO).toBe("vivir.production@gmail.com");
+  expect(INQUIRY_TO).toBe("vivir.studios.iloilo@gmail.com");
 });
 
 // --------------------------------------------------------------------------
 // required fields -> 400, field-level
 // --------------------------------------------------------------------------
 
-for (const missing of ["name", "email", "message"] as const) {
+for (const missing of ["name", "email", "packageInterest", "message"] as const) {
   test(`400 when ${missing} is missing, naming the field`, async () => {
-    const body: Record<string, string> = { ...VALID };
+    const body: Record<string, unknown> = { ...VALID };
     delete body[missing];
 
     const response = await POST(jsonRequest(body));
@@ -164,7 +174,7 @@ for (const missing of ["name", "email", "message"] as const) {
 }
 
 test("subject is optional and falls back to a default", async () => {
-  const body: Record<string, string> = { ...VALID };
+  const body: Record<string, unknown> = { ...VALID };
   delete body.subject;
 
   const response = await POST(jsonRequest(body));
@@ -275,7 +285,7 @@ test("a filled honeypot returns a generic no-send response and sends nothing", a
 
   expect(response.status).toBe(200);
   expect(data.ok).toBe(false);
-  expect(data.error).toBe("We could not send that just now. Please email vivir.production@gmail.com directly.");
+  expect(data.error).toBe("We could not send that just now. Please email vivir.studios.iloilo@gmail.com directly.");
   expect(sentMail).toHaveLength(0);
   expect(transportOptions).toHaveLength(0);
 });
@@ -415,8 +425,17 @@ test("sends to INQUIRY_TO, from GMAIL_USER, replying to the submitter", async ()
   const text = String(mail.text);
   expect(text).toContain(VALID.name);
   expect(text).toContain(VALID.email);
+  expect(text).toContain("Package: Wedding Photo and Video - Standard");
+  expect(text).toContain("Add-ons: Same-day edit, Aerial / drone coverage");
   expect(text).toContain(VALID.message);
   expect(mail.html).toBeUndefined();
+});
+
+test("sends a clear add-ons line when none are selected", async () => {
+  const response = await POST(jsonRequest({ ...VALID, addOns: [] }));
+
+  expect(response.status).toBe(200);
+  expect(String(sentMail[0].text)).toContain("Add-ons: None selected");
 });
 
 test("the submitter's address never becomes the From header", async () => {

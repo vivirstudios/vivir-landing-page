@@ -335,7 +335,7 @@ test("contact form offers direct email when the service is unavailable", async (
       contentType: "application/json",
       body: JSON.stringify({
         ok: false,
-        error: "The inquiry mailbox is not configured yet. Please email vivir.production@gmail.com directly.",
+        error: "The inquiry mailbox is not configured yet. Please email vivir.studios.iloilo@gmail.com directly.",
       }),
     }),
   );
@@ -346,10 +346,10 @@ test("contact form offers direct email when the service is unavailable", async (
   await form.getByLabel("Message *").fill("This value must remain after a service failure.");
   await form.getByRole("button", { name: "Send inquiry" }).click();
   await expect(page.locator("#inquiry-status")).toHaveText(
-    "The inquiry form is being configured. Please email us directly. vivir.production@gmail.com",
+    "The inquiry form is being configured. Please email us directly. vivir.studios.iloilo@gmail.com",
   );
-  await expect(page.locator("#inquiry-status a[href='mailto:vivir.production@gmail.com']")).toHaveCount(1);
-  await expect(page.locator("#inquiry-status a[href='mailto:vivir.production@gmail.com']")).toBeVisible();
+  await expect(page.locator("#inquiry-status a[href='mailto:vivir.studios.iloilo@gmail.com']")).toHaveCount(1);
+  await expect(page.locator("#inquiry-status a[href='mailto:vivir.studios.iloilo@gmail.com']")).toBeVisible();
   await expect(form.getByLabel("Message *")).toHaveValue("This value must remain after a service failure.");
 });
 
@@ -360,7 +360,7 @@ test("contact form keeps a human's message when the honeypot is unexpectedly fil
       contentType: "application/json",
       body: JSON.stringify({
         ok: false,
-        error: "We could not send that just now. Please email vivir.production@gmail.com directly.",
+        error: "We could not send that just now. Please email vivir.studios.iloilo@gmail.com directly.",
       }),
     }),
   );
@@ -374,7 +374,7 @@ test("contact form keeps a human's message when the honeypot is unexpectedly fil
   });
   await form.getByRole("button", { name: "Send inquiry" }).click();
   await expect(page.locator("#inquiry-status")).toHaveText(
-    "We could not send that just now. Please email us directly. vivir.production@gmail.com",
+    "We could not send that just now. Please email us directly. vivir.studios.iloilo@gmail.com",
   );
   await expect(form.getByLabel("Message *")).toHaveValue("This message must not be discarded.");
 });

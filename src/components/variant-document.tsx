@@ -25,7 +25,7 @@ export function VariantDocument({ slug, page }: VariantDocumentProps) {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: source.css }} />
-      <ReviewSwitcher current={slug} />
+      {page !== "landing" ? <ReviewSwitcher current={slug} /> : null}
       <div dangerouslySetInnerHTML={{ __html: source.bodyByPage[page] }} />
     </>
   );

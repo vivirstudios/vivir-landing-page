@@ -87,14 +87,7 @@ for (const route of approvedRoutes) {
     await expect(page.locator("form#inquiry input[name='website']")).toHaveAttribute("autocomplete", "off");
     await expect(page.locator("form#inquiry input[name='website']")).toHaveAttribute("data-bwignore", "true");
     await expect(page.locator(".foot__title")).toHaveText("You have a testimony? Let’s talk.");
-    await expect(page.locator(".vivir-review-switcher")).toHaveAttribute("aria-label", "Vivír color palettes");
-    await expect(page.locator(".vivir-review-switcher a")).toHaveText(["All", "Ochre", "Sanctuary", "Blue"]);
-    await expect(page.locator(".vivir-review-switcher a[aria-current='page']")).toHaveCount(1);
-
-    const activeColor = await page
-      .locator(".vivir-review-switcher a[aria-current='page']")
-      .evaluate((element) => getComputedStyle(element).color);
-    expect(activeColor).toBe(route.accent);
+    await expect(page.locator(".vivir-review-switcher")).toHaveCount(0);
     expect(
       await page.locator(".mail").evaluate((mail) => Number.parseFloat(getComputedStyle(mail).fontSize)),
     ).toBeLessThanOrEqual(18);
@@ -379,22 +372,10 @@ test("contact form keeps a human's message when the honeypot is unexpectedly fil
   await expect(form.getByLabel("Message *")).toHaveValue("This message must not be discarded.");
 });
 
-test("footer content clears the fixed review switcher", async ({ page }) => {
+test("landing page keeps the review switcher out of the public experience", async ({ page }) => {
   await page.goto("/v1-ochre#contact");
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  const clearsSwitcher = await page.evaluate(() => {
-    const legal = document.querySelector(".foot__legal")?.getBoundingClientRect();
-    const switcher = document.querySelector(".vivir-review-switcher")?.getBoundingClientRect();
-    if (!legal || !switcher) return false;
-    const intersects = !(
-      legal.right <= switcher.left ||
-      legal.left >= switcher.right ||
-      legal.bottom <= switcher.top ||
-      legal.top >= switcher.bottom
-    );
-    return !intersects;
-  });
-  expect(clearsSwitcher).toBe(true);
+  await expect(page.locator(".vivir-review-switcher")).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
